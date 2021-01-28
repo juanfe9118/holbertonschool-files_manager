@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import redisClient from './redis';
 
 async function getIdAndKey(req) {
@@ -12,4 +13,14 @@ async function getIdAndKey(req) {
   return userInfo;
 }
 
+function isValidUser(id) {
+  try {
+    ObjectId(id);
+  } catch (error) {
+    return false;
+  }
+  return true;
+}
+
 export default getIdAndKey;
+export default isValidUser;

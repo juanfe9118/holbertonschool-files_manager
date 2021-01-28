@@ -1,6 +1,7 @@
 import express from 'express';
 import AppController from '../controllers/AppController';
 import AuthController from '../controllers/AuthController';
+import FilesController from '../controllers/FilesController';
 import UsersController from '../controllers/UsersController';
 
 function controllerRouting(app) {
@@ -29,6 +30,10 @@ function controllerRouting(app) {
 
   router.get('/users/me', (req, res) => {
     UsersController.getMe(req, res);
+  });
+
+  router.post('/files', (req, res) => {
+    FilesController.postUpload(req, res);
   });
 }
 
