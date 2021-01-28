@@ -22,5 +22,4 @@ function isValidUser(id) {
   return true;
 }
 
-export default getIdAndKey;
-export default isValidUser;
+export { getIdAndKey, isValidUser };
