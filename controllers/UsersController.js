@@ -1,6 +1,8 @@
 import sha1 from 'sha1';
 import Queue from 'bull';
+import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
+import getIdAndKey from '../utils/users';
 
 const userQ = new Queue('userQ');
 
@@ -30,6 +32,19 @@ class UsersController {
     });
 
     return res.status(201).send(createdUser);
+  }
+
+  static async getMe(req, res) {
+    const { userId } = await getIdAndKey(req);
+
+    const user = await dbClient.users.findOne({ _id: ObjectId(userId) });
+    if (!user) return res.status(401).send({ error: 'Unauthorized' });
+
+    const userInfo = { id: user._id, ...user };
+    delete userInfo._id;
+    delete userInfo.password;
+
+    return res.status(200).send(userInfo);
   }
 }
 
