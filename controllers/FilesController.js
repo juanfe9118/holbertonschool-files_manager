@@ -116,6 +116,9 @@ class FilesController {
     if (!user) return res.status(401).send({ error: 'Unauthorized' });
 
     const parentId = req.query.parentId || 0;
+    const folder = await dbClient.files.findOne({ _id: ObjectId(parentId) });
+    if (!folder || folder.type !== 'folder') return res.status(200).send([]);
+
     const page = req.query.page || 0;
 
     const agg = { $and: [{ parentId }] };
