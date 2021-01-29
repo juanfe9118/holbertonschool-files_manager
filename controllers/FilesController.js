@@ -96,9 +96,9 @@ class FilesController {
 
     const fileId = req.params.id || '';
     const file = await dbClient.files.findOne({ _id: ObjectId(fileId), userId: user._id });
-    if (!file) return res.status(400).send({ error: 'Not found' });
+    if (!file) return res.status(404).send({ error: 'Not found' });
 
-    return res.send({
+    return res.status(200).send({
       id: file._id,
       userId: file.userId,
       name: file.name,
@@ -137,7 +137,7 @@ class FilesController {
       files.push(fileObj);
     });
 
-    return res.send(files);
+    return res.status(200).send(files);
   }
 }
 
