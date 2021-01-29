@@ -125,7 +125,7 @@ class FilesController {
     const pageFiles = await dbClient.files.aggregate(aggData);
     const files = [];
 
-    for (const file of pageFiles) {
+    await pageFiles.forEach((file) => {
       const fileObj = {
         id: file._id,
         userId: file.userId,
@@ -135,7 +135,7 @@ class FilesController {
         parentId: file.parentId,
       };
       files.push(fileObj);
-    }
+    });
 
     return res.send(files);
   }
