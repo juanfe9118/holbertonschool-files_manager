@@ -118,12 +118,12 @@ class FilesController {
     let parentId = req.query.parentId || 0;
     if (parentId === '0') parentId = 0;
     if (parentId !== 0) {
-        if (!isValidUser(parentId)) return res.status(401).send({ error: 'Unauthorized' });
+      if (!isValidUser(parentId)) return res.status(401).send({ error: 'Unauthorized' });
 
-        parentId = ObjectId(parentId);
-        
-        const folder = await dbClient.files.findOne({ _id: ObjectId(parentId) });
-        if (!folder || folder.type !== 'folder') return res.status(200).send([]);
+      parentId = ObjectId(parentId);
+
+      const folder = await dbClient.files.findOne({ _id: ObjectId(parentId) });
+      if (!folder || folder.type !== 'folder') return res.status(200).send([]);
     }
 
     const page = req.query.page || 0;
