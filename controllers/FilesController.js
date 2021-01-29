@@ -211,10 +211,8 @@ class FilesController {
     const { isPublic, userId, type } = file;
 
     const { userId: user } = await getIdAndKey(req);
-    let owner = false;
-    if (user) owner = user._id.toString() === userId.toString();
 
-    if (!isPublic && !owner) return res.status(404).send({ error: 'Not found' });
+    if ((!isPublic && !user) || (user && userId.toString() !== user && !isPublic)) return res.status(404).send({ error: 'Not found' });
     if (type === 'folder') return res.status(400).send({ error: 'A folder doesn\'t have content' });
 
     const path = size === 0 ? file.localPath : `${file.localPath}_${size}`;
