@@ -1,7 +1,8 @@
 import Queue from 'bull';
 import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
-import { mkdir, writeFile } from 'fs';
+import { mkdir, writeFile, readFileSync } from 'fs';
+import mime from 'mime-types';
 import dbClient from '../utils/db';
 import { getIdAndKey, isValidUser } from '../utils/users';
 
@@ -198,6 +199,34 @@ class FilesController {
       isPublic: file.isPublic,
       parentId: file.parentId,
     });
+  }
+
+  static async getFile(req, res) {
+    const fileId = req.params.id || '';
+    const size = req.query.size || 0;
+
+    const file = await dbClient.files.findOne({ _id: ObjectId(fileId) });
+    if (!file) return res.status(404).send({ error: 'Not found' });
+
+    const { isPublic, userId, type } = file;
+
+    const { userId: user } = await getIdAndKey(req);
+    let owner = false;
+    if (user) owner = user._id.toString() === userId.toString();
+
+    if (!isPublic && !owner) return res.status(404).send({ error: 'Not found' });
+    if (type === 'folder') return res.status(400).send({ error: 'A folder doesn\'t have content' });
+
+    const path = size === 0 ? file.localPath : `${file.localPath}_${size}`;
+
+    try {
+      const fileData = readFileSync(path);
+      const mimeType = mime.contentType(file.name);
+      res.setHeader('Content-Type', mimeType);
+      return res.status(200).send(fileData);
+    } catch (err) {
+      return res.status(404).send({ error: 'Not found' });
+    }
   }
 }
 
